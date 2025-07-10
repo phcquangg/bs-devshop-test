@@ -1,0 +1,95 @@
+<a href="{{ card_product.url }}" class="bs-shopdev__product-card">
+  <div class="bs-shopdev__product-card__images">
+    <div class="bs-shopdev__product-card__images__main">
+      <img
+        srcset="
+          {%- if card_product.featured_media.width >= 165 -%}{{ card_product.featured_media | image_url: width: 165 }} 165w,{%- endif -%}
+          {%- if card_product.featured_media.width >= 360 -%}{{ card_product.featured_media | image_url: width: 360 }} 360w,{%- endif -%}
+          {%- if card_product.featured_media.width >= 533 -%}{{ card_product.featured_media | image_url: width: 533 }} 533w,{%- endif -%}
+          {%- if card_product.featured_media.width >= 720 -%}{{ card_product.featured_media | image_url: width: 720 }} 720w,{%- endif -%}
+          {%- if card_product.featured_media.width >= 940 -%}{{ card_product.featured_media | image_url: width: 940 }} 940w,{%- endif -%}
+          {%- if card_product.featured_media.width >= 1066 -%}{{ card_product.featured_media | image_url: width: 1066 }} 1066w,{%- endif -%}
+          {{ card_product.featured_media | image_url }} {{ card_product.featured_media.width }}w
+        "
+        src="{{ card_product.featured_media | image_url: width: 533 }}"
+        sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+        alt="{{ card_product.featured_media.alt | escape }}"
+        class="motion-reduce"
+        {% unless lazy_load == false %}
+          loading="lazy"
+        {% endunless %}
+        width="{{ card_product.featured_media.width }}"
+        height="{{ card_product.featured_media.height }}"
+      >
+    </div>
+
+    {%- if card_product.media[1] != null -%}
+      <div class="bs-shopdev__product-card__images__secondary">
+        <img
+          srcset="
+            {%- if card_product.media[1].width >= 165 -%}{{ card_product.media[1] | image_url: width: 165 }} 165w,{%- endif -%}
+            {%- if card_product.media[1].width >= 360 -%}{{ card_product.media[1] | image_url: width: 360 }} 360w,{%- endif -%}
+            {%- if card_product.media[1].width >= 533 -%}{{ card_product.media[1] | image_url: width: 533 }} 533w,{%- endif -%}
+            {%- if card_product.media[1].width >= 720 -%}{{ card_product.media[1] | image_url: width: 720 }} 720w,{%- endif -%}
+            {%- if card_product.media[1].width >= 940 -%}{{ card_product.media[1] | image_url: width: 940 }} 940w,{%- endif -%}
+            {%- if card_product.media[1].width >= 1066 -%}{{ card_product.media[1] | image_url: width: 1066 }} 1066w,{%- endif -%}
+            {{ card_product.media[1] | image_url }} {{ card_product.media[1].width }}w
+          "
+          src="{{ card_product.media[1] | image_url: width: 533 }}"
+          sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+          alt="{{ card_product.media[1].alt | escape }}"
+          class="motion-reduce"
+          loading="lazy"
+          width="{{ card_product.media[1].width }}"
+          height="{{ card_product.media[1].height }}"
+        >
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="bs-shopdev__product-card__content">
+    <div class="bs-shopdev__product-card__title">
+      <h3>{{ card_product.title }}</h3>
+    </div>
+    <div class="bs-shopdev__product-card__price">
+      {% if card_product.available == true %}
+        {% render 'price', product: card_product %}
+      {% else %}
+        <span class="bs-shopdev__product-card__price-sold-out">Sold Out</span>
+      {% endif %}
+    </div>
+  </div>
+</a>
+
+<script>
+  // Product Card Zoom Animation
+  document.addEventListener('DOMContentLoaded', function() {
+    // Delegate to all product cards on the page
+    document.querySelectorAll('.bs-shopdev__product-card').forEach(function(card) {
+      // Prevent double binding
+      if (card.dataset.zoomBound) return;
+      card.dataset.zoomBound = "true";
+
+      card.addEventListener('click', function(e) {
+        // Only left click, no modifier keys
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+        // If already zooming, let navigation happen
+        if (card.classList.contains('zooming')) return;
+
+        e.preventDefault();
+
+        card.classList.add('zooming');
+
+        // Animation duration should match CSS (600ms)
+        setTimeout(function() {
+          // After animation, go to the link
+          var link = card.closest('a');
+          if (link && link.href) {
+            window.location = link.href;
+          }
+        }, 600);
+      });
+    });
+  });
+</script>
